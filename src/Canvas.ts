@@ -1,11 +1,16 @@
-type Pixel = {
-  r: number;
-  g: number;
-  b: number;
-  a: number;
-};
+import { multiply } from 'mathjs';
 
-type PixelMatrix = Pixel[][];
+type X = number;
+type Y = number;
+type PixelPositionMatrix = [ X[],
+                             Y[],
+                             1[] ];
+
+type Tx = number;
+type Ty = number;
+type TranslationMatrix = [ [  1,  0, Tx ],
+                           [  0,  1, Ty ],
+                           [  0,  0,  1 ] ];
 
 export default class Canvas {
   #canvas: HTMLCanvasElement;
@@ -36,60 +41,99 @@ export default class Canvas {
     });
   }
 
-  async #getPixelMatrix(): Promise<PixelMatrix> {
+  async #getPixelPositionMatrix(): Promise<PixelPositionMatrix> {
     const width = this.#canvas.width,
-      height = this.#canvas.height;
+          height = this.#canvas.height;
 
-    const imageData = this.ctx.getImageData(0, 0, width, height);
-    const pixelData = imageData.data;
+    const pixelPositionMatrix: PixelPositionMatrix = [
+      [], // X
+      [], // Y
+      []  // 1
+    ];
 
-    const pixelMatrix: PixelMatrix = [];
-
-    for (let x = 0; x < width; x++) {
-      pixelMatrix.push([]);
-
-      for (let y = 0; y < height; y++) {
-        const i = 4 * (x * height + y);
-
-        const pixel: Pixel = {
-          r: pixelData[i + 0],
-          g: pixelData[i + 1],
-          b: pixelData[i + 2],
-          a: pixelData[i + 3],
-        };
-
-        pixelMatrix[x].push(pixel);
+    for(let y = 0; y < height; y++) {
+      for(let x = 0; x < width; x++) {
+        pixelPositionMatrix[0].push(x)
+        pixelPositionMatrix[1].push(y)
+        pixelPositionMatrix[2].push(1)
       }
     }
 
-    return pixelMatrix;
+    return pixelPositionMatrix;
   }
 
-  async toGrayScale(): Promise<void> {
+  async #getOutputPixelData(inM: PixelPositionMatrix, outM: PixelPositionMatrix): Promise<Uint8ClampedArray> {
     const width = this.#canvas.width,
-      height = this.#canvas.height;
+          height = this.#canvas.height,
+          size = width*height;
 
-    const pixelMatrix = await this.#getPixelMatrix();
+    const inPixelData = this.ctx.getImageData(0, 0, width, height).data,
+          outPixelData = new Uint8ClampedArray(4*size);
 
-    const pixelData = new Uint8ClampedArray(4 * width * height);
+    for(let n = 0; n < size; n++) {
+      const inX = inM[0][n],
+            inY = inM[1][n],
+            outX = outM[0][n],
+            outY = outM[1][n];
 
-    for (let x = 0; x < width; x++) {
-      for (let y = 0; y < height; y++) {
-        const pixel = pixelMatrix[x][y];
+      if(outX >= width || outY >= height)
+        continue;
 
-        const avg = (pixel.r + pixel.g + pixel.b) / 3;
-
-        const i = 4 * (x * height + y);
-
-        pixelData[i + 0] = avg;
-        pixelData[i + 1] = avg;
-        pixelData[i + 2] = avg;
-        pixelData[i + 3] = pixel.a;
-      }
+      const inIdx = 4 * (inY * width + inX);
+      const outIdx = 4 * (outY * width + outX);
+      
+      outPixelData[outIdx + 0] = inPixelData[inIdx + 0]; // R
+      outPixelData[outIdx + 1] = inPixelData[inIdx + 1]; // G
+      outPixelData[outIdx + 2] = inPixelData[inIdx + 2]; // B
+      outPixelData[outIdx + 3] = inPixelData[inIdx + 3]; // A
     }
+
+    return outPixelData;
+  }
+
+  async #draw(pixelData: Uint8ClampedArray) {
+    const width = this.#canvas.width,
+          height = this.#canvas.height;
 
     const imageData = new ImageData(pixelData, width, height);
 
     this.ctx.putImageData(imageData, 0, 0);
   }
+  
+  async toGrayScale(): Promise<void> {
+    const width = this.#canvas.width,
+      height = this.#canvas.height;
+
+    const pixelData = this.ctx.getImageData(0, 0, width, height).data;
+
+    for (let i = 0; i < pixelData.length; i += 4) {
+        const r = pixelData[i + 0],
+              g = pixelData[i + 1],
+              b = pixelData[i + 2];
+
+        const avg = (r + g + b) / 3;
+
+        pixelData[i + 0] = avg;
+        pixelData[i + 1] = avg;
+        pixelData[i + 2] = avg;
+    }
+
+    this.#draw(pixelData);
+  }
+
+  async translateImage(tx: Tx, ty: Tx) {
+    const tM: TranslationMatrix = [
+      [  1,  0, tx ],
+      [  0,  1, ty ],
+      [  0,  0,  1 ]
+    ];
+
+    const inM = await this.#getPixelPositionMatrix(),
+          outM = multiply(tM, inM) as PixelPositionMatrix;
+
+    const pixelData = await this.#getOutputPixelData(inM, outM);
+
+    this.#draw(pixelData)
+  }
+
 }
