@@ -12,6 +12,18 @@ type TranslationMatrix = [ [  1,  0, Tx ],
                            [  0,  1, Ty ],
                            [  0,  0,  1 ] ];
 
+type Sx = number;
+type Sy = number;
+type ScaleMatrix = [ [ Sx,  0,  0 ],
+                     [  0, Sy,  0 ],
+                     [  0,  0,  1 ] ];
+
+type Cos = number;
+type Sin = number;
+type RotationMatrix = [ [ Cos, Sin, 0 ],
+                        [ Sin, Cos, 0 ],
+                        [   0,   0, 1 ] ];
+
 export default class Canvas {
   #canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
@@ -80,7 +92,7 @@ export default class Canvas {
         continue;
 
       const inIdx = 4 * (inY * width + inX);
-      const outIdx = 4 * (outY * width + outX);
+      const outIdx = Math.round(4 * (outY * width + outX));
       
       outPixelData[outIdx + 0] = inPixelData[inIdx + 0]; // R
       outPixelData[outIdx + 1] = inPixelData[inIdx + 1]; // G
@@ -121,7 +133,7 @@ export default class Canvas {
     this.#draw(pixelData);
   }
 
-  async translateImage(tx: Tx, ty: Tx) {
+  async translateImage(tx: Tx, ty: Ty) {
     const tM: TranslationMatrix = [
       [  1,  0, tx ],
       [  0,  1, ty ],
@@ -133,7 +145,44 @@ export default class Canvas {
 
     const pixelData = await this.#getOutputPixelData(inM, outM);
 
-    this.#draw(pixelData)
+    this.#draw(pixelData);
+  }
+
+  //OBS: Gera imagens duplicadas caso scala < 1;
+  async resizeImage(sx: Sx, sy: Sy) {
+    const sM: ScaleMatrix = [
+      [ sx,  0,  0 ],
+      [  0, sy,  0 ],
+      [  0,  0,  1 ]
+    ];
+
+    const inM = await this.#getPixelPositionMatrix(),
+          outM = multiply(sM, inM) as PixelPositionMatrix;
+
+    const pixelData = await this.#getOutputPixelData(inM, outM);
+
+    this.#draw(pixelData);
+  }
+ 
+  //OBS: Funciona somente com angulos retos;
+  async rotateImage(angle: number) {
+    const radians = angle * Math.PI / 180
+    
+    const cos = Math.cos(radians),
+          sin = Math.sin(radians);
+
+    const rM: RotationMatrix = [
+      [ cos, -sin, 0 ],
+      [ sin,  cos, 0 ],
+      [   0,    0, 1 ]
+    ];
+
+    const inM = await this.#getPixelPositionMatrix(),
+          outM = multiply(rM, inM) as PixelPositionMatrix;
+
+    const pixelData = await this.#getOutputPixelData(inM, outM);
+
+    this.#draw(pixelData);
   }
 
 }
