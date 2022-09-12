@@ -67,15 +67,17 @@ export default class Canvas {
     for(let n = 0; n < size; n++) {
       const inX = inM[0][n],
             inY = inM[1][n],
-            outX = outM[0][n],
-            outY = outM[1][n];
+            outX = Math.round(outM[0][n]),
+            outY = Math.round(outM[1][n]);
 
       if(outX >= width || outY >= height)
         continue;
 
       const inIdx = 4 * (inY * width + inX);
-      const outIdx = Math.round(4 * (outY * width + outX));
+      const outIdx = 4 * (outY * width + outX);
       
+      // console.log(outIdx)
+
       outPixelData[outIdx + 0] = inPixelData[inIdx + 0]; // R
       outPixelData[outIdx + 1] = inPixelData[inIdx + 1]; // G
       outPixelData[outIdx + 2] = inPixelData[inIdx + 2]; // B
@@ -88,6 +90,8 @@ export default class Canvas {
   #draw(pixelData: Uint8ClampedArray): void {
     const width = this.#canvas.width,
           height = this.#canvas.height;
+
+    this.#ctx.clearRect(0,0,width,height);
 
     const imageData = new ImageData(pixelData, width, height);
 
@@ -173,6 +177,8 @@ export default class Canvas {
     const inM = this.#getPixelPositionMatrix(),
           outM = multiply(sM, inM) as PixelPositionMatrix;
 
+    console.log(outM)
+
     const pixelData = this.#getOutputPixelData(inM, outM);
 
     this.#draw(pixelData);
@@ -211,6 +217,8 @@ export default class Canvas {
 
     const inM = this.#getPixelPositionMatrix(),
           outM = multiply(mM, inM) as PixelPositionMatrix;
+
+    console.log(outM)
 
     const pixelData = this.#getOutputPixelData(inM, outM);
     
