@@ -107,9 +107,41 @@ export default class Canvas {
 
         const avg = (r + g + b) / 3;
 
-        pixelData[i + 0] = avg;
-        pixelData[i + 1] = avg;
-        pixelData[i + 2] = avg;
+        pixelData[i + 0] = avg; // R
+        pixelData[i + 1] = avg; // G
+        pixelData[i + 2] = avg; // B
+    }
+
+    this.#draw(pixelData);
+  }
+
+  async applyContrast(contrast: number): Promise<void> {
+    const width = this.#canvas.width,
+      height = this.#canvas.height;
+
+    const pixelData = this.#ctx.getImageData(0, 0, width, height).data;
+
+    for (let i = 0; i < pixelData.length; i += 4) {
+        
+        pixelData[i + 0] *= contrast; // R
+        pixelData[i + 1] *= contrast; // G
+        pixelData[i + 2] *= contrast; // B
+    }
+
+    this.#draw(pixelData);
+  }
+
+  async applyBrightness(brightness: number): Promise<void> {
+    const width = this.#canvas.width,
+      height = this.#canvas.height;
+
+    const pixelData = this.#ctx.getImageData(0, 0, width, height).data;
+
+    for (let i = 0; i < pixelData.length; i += 4) {
+        
+        pixelData[i + 0] += brightness; // R
+        pixelData[i + 1] += brightness; // G
+        pixelData[i + 2] += brightness; // B
     }
 
     this.#draw(pixelData);
