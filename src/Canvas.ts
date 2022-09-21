@@ -13,8 +13,14 @@ enum Mirror {
   Vertical
 }
 
+enum Pivot {
+  TopLeft,
+  Center,
+}
+
 export default class Canvas {
   public static readonly Mirror = Mirror;
+  public static readonly Pivot = Pivot;
 
   public width: number;
   public height: number;
@@ -60,15 +66,20 @@ export default class Canvas {
     });
   }
 
-  private getPixelPositionMatrix(): PixelPositionMatrix {
+  private getPixelPositionMatrix(pivot: Pivot = Pivot.TopLeft): PixelPositionMatrix {
     const pixelPositionMatrix: PixelPositionMatrix = [
       [], // X
       [], // Y
       []  // 1
     ];
 
-    for(let y = 0; y < this.img.height; y++) {
-      for(let x = 0; x < this.img.width; x++) {
+    const yInit = pivot === Pivot.Center ? -Math.floor(this.img.height/2) : 0;
+    const xInit = pivot === Pivot.Center ? -Math.floor(this.img.width/2) : 0;
+    const yEnd = pivot === Pivot.Center ? Math.ceil(this.img.height/2) : this.img.height;
+    const xEnd = pivot === Pivot.Center ? Math.ceil(this.img.width/2) : this.img.width;
+
+    for(let y = yInit; y < yEnd; y++) {
+      for(let x = xInit; x < xEnd; x++) {
         pixelPositionMatrix[0].push(x)
         pixelPositionMatrix[1].push(y)
         pixelPositionMatrix[2].push(1)
@@ -78,23 +89,30 @@ export default class Canvas {
     return pixelPositionMatrix;
   }
 
-  private getOutputPixelData(inM: PixelPositionMatrix, outM: PixelPositionMatrix): Uint8ClampedArray {
-    const size = this.img.width*this.img.height;
-
+  private getOutputPixelData(
+    inM: PixelPositionMatrix,
+    outM: PixelPositionMatrix,
+    inImg: CanvasImage,
+    outImg: CanvasImage
+  ) : Uint8ClampedArray {
     const inPixelData = this.ctx.getImageData(this.img.x, this.img.y, this.img.width, this.img.height).data,
-          outPixelData = new Uint8ClampedArray(4*this.width*this.height);
-
+      outPixelData = new Uint8ClampedArray(4*outImg.width*outImg.height);
+    
+    const size = inImg.width*inImg.height;
     for(let n = 0; n < size; n++) {
-      const inX = inM[0][n],
-            inY = inM[1][n],
-            outX = this.img.x + Math.round(outM[0][n]),
-            outY = this.img.y + Math.round(outM[1][n]);
+      const inX = inImg.x + inM[0][n],
+            inY = inImg.y + inM[1][n],
+            outX = outImg.x + Math.round(outM[0][n]),
+            outY = outImg.y + Math.round(outM[1][n]);
 
-      if(outX >= this.width || outY >= this.height)
+      if(n === 0)
+        console.log(inX, inY);
+
+      if(outX >= outImg.width || outY >= outImg.height)
         continue;
 
-      const inIdx = 4 * (inY * this.img.width + inX);
-      const outIdx = 4 * (outY * this.width + outX);
+      const inIdx = 4 * (inY * inImg.width + inX);
+      const outIdx = 4 * (outY * outImg.width + outX);
       
       outPixelData[outIdx + 0] = inPixelData[inIdx + 0]; // R
       outPixelData[outIdx + 1] = inPixelData[inIdx + 1]; // G
@@ -105,14 +123,21 @@ export default class Canvas {
     return outPixelData;
   }
 
-  private draw(pixelData: Uint8ClampedArray): void {
+  private draw(pixelData: Uint8ClampedArray, drawImg?: CanvasImage): void {
+    if (!drawImg)
+      drawImg = {
+        x: 0,
+        y: 0,
+        width: this.width,
+        height: this.height
+      };
+    
+    const imageData = new ImageData(pixelData, drawImg.width, drawImg.height);
+      
     this.ctx.clearRect(0,0,this.width,this.height);
-
-    const imageData = new ImageData(pixelData, this.width, this.height);
-
-    this.ctx.putImageData(imageData, 0, 0);
+    this.ctx.putImageData(imageData, drawImg.x, drawImg.y);
   }
-  
+
   public async toGrayScale(): Promise<void> {
     const pixelData = this.ctx.getImageData(0, 0, this.width, this.height).data;
 
@@ -167,7 +192,18 @@ export default class Canvas {
     const inM = this.getPixelPositionMatrix(),
           outM = multiply(tM, inM) as PixelPositionMatrix;
 
-    const pixelData = this.getOutputPixelData(inM, outM);
+    const inImg: CanvasImage = { 
+      ...this.img,
+      x: 0,
+      y: 0
+    };
+    const outImg: CanvasImage = {
+      ...this.img,
+      width: this.width,
+      height: this.height
+    };
+    
+    const pixelData = this.getOutputPixelData(inM, outM, inImg, outImg);
 
     this.img.x += tx;
     this.img.y += ty;
@@ -185,12 +221,24 @@ export default class Canvas {
     const inM = this.getPixelPositionMatrix(),
           outM = multiply(sM, inM) as PixelPositionMatrix;
 
-    const pixelData = this.getOutputPixelData(inM, outM);
+    const inImg: CanvasImage = {
+      ...this.img,
+      x: 0,
+      y: 0
+    };
+    const outImg: CanvasImage = {
+      ...inImg,
+      width: Math.round(sx*this.img.width),
+      height: Math.round(sy*this.img.height)
+    };
 
-    this.img.width = Math.round(sx*this.img.width)
-    this.img.height = Math.round(sy*this.img.height)
+    const pixelData = this.getOutputPixelData(inM, outM, inImg, outImg);
 
-    this.draw(pixelData);
+    this.img.width = outImg.width;
+    this.img.height = outImg.height;
+
+    const drawImg = { ...this.img } as CanvasImage;
+    this.draw(pixelData, drawImg);
   }
  
   public async rotateImage(angle: number): Promise<void> {
@@ -205,12 +253,24 @@ export default class Canvas {
       [   0,    0, 1 ]
     ];
 
-    const inM = this.getPixelPositionMatrix(),
+    const inM = this.getPixelPositionMatrix(Pivot.Center),
           outM = multiply(rM, inM) as PixelPositionMatrix;
 
-    const pixelData = this.getOutputPixelData(inM, outM);
+    const inImg: CanvasImage = {
+      ...this.img,
+      x: Math.floor(this.img.width/2),
+      y: Math.floor(this.img.height/2)
+    };
+    const outImg: CanvasImage = {
+      ...inImg,
+      width: this.width,
+      height: this.height
+    };
 
-    this.draw(pixelData);
+    const pixelData = this.getOutputPixelData(inM, outM, inImg, outImg);
+
+    const drawImg = { ...outImg, x: this.img.x, y: this.img.y } as CanvasImage;
+    this.draw(pixelData, drawImg);
   }
 
   public async mirrorImage(mirror: Mirror): Promise<void> {
@@ -226,9 +286,22 @@ export default class Canvas {
     const inM = this.getPixelPositionMatrix(),
           outM = multiply(mM, inM) as PixelPositionMatrix;
 
-    const pixelData = this.getOutputPixelData(inM, outM);
+
+    const inImg: CanvasImage= {
+      ...this.img,
+      x: 0,
+      y: 0
+    };
+    const outImg: CanvasImage = {
+      ...this.img,
+      x: mirror === Mirror.Horizontal ? this.img.width - 1 : 0,
+      y: mirror === Mirror.Vertical ? this.img.height - 1 : 0
+    };
+
+    const pixelData = this.getOutputPixelData(inM, outM, inImg, outImg);
     
-    this.draw(pixelData);
+    const drawImg = { ...this.img } as CanvasImage;
+    this.draw(pixelData, drawImg);
   }
 
 }
