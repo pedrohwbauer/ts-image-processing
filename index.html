@@ -7,7 +7,91 @@
     <link rel="stylesheet" href="/src/style.css">
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">
+
+      <canvas id="canvas"></canvas>
+
+      <div id="controls">
+
+        <form id="to-gray-scale">
+          <div class="submit-btn">
+            <input type="submit" value="To Gray Scale">
+          </div>
+        </form>
+
+        <form id="contrast">
+          <div class="field">
+            <label for="contrast-range">Contrast</label>
+            <input type="number" step="any" name="contrast-range">
+          </div>
+          <div class="submit-btn">
+            <input type="submit" value="Apply contrast">
+          </div>
+        </form>
+        
+        <form id="brightness">
+          <div class="field">
+            <label for="brightness-range">Brigtness</label>
+            <input type="number" name="brightness-range">
+          </div>
+          <div class="submit-btn">
+            <input type="submit" value="Apply brightness">
+          </div>
+        </form>
+
+        <form id="translate">
+          <div class="field">
+            <label for="tx">X</label>
+            <input type="number" name="tx">
+          </div>
+          <div class="field">
+            <label for="ty">Y</label>
+            <input type="number" name="ty">
+          </div>
+          <div class="submit-btn">
+            <input type="submit" value="Translate">
+          </div>
+        </form>
+        
+        <form id="resize">
+          <div class="field">
+            <label for="sx">X</label>
+            <input type="number" step="any" name="sx">
+          </div>
+          <div class="field">
+            <label for="sy">Y</label>
+            <input type="number" step="any" name="sy">
+          </div>
+          <div class="submit-btn">
+            <input type="submit" value="Resize">
+          </div>
+        </form>
+        
+        <form id="rotate">
+          <div class="field">
+            <label for="angle">Angle</label>
+            <input type="number" name="angle">
+          </div>
+          <div class="submit-btn">
+            <input type="submit" value="Rotate">
+          </div>
+        </form>
+        
+        <form id="mirror">
+          <div class="field">
+            <label for="angle">Direction</label>
+            <select name="direction">
+              <option value="horizontal" selected>Horizontal</option>
+              <option value="vertical">Vertical</option>
+            </select>
+          </div>
+          <div class="submit-btn">
+            <input type="submit" value="Mirror">
+          </div>
+        </form>
+
+      </div>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

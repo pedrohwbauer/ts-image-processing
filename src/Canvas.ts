@@ -28,13 +28,13 @@ export default class Canvas {
   private img: CanvasImage;
 
   constructor(width: number, height: number) {
-    const htmlCanvas = document.createElement("canvas") as HTMLCanvasElement;
+    const htmlCanvas = document.querySelector<HTMLCanvasElement>("#canvas")!;
 
     this.width = htmlCanvas.width = width;
     this.height = htmlCanvas.height = height;
 
-    const app = document.querySelector<HTMLElement>("#app")!;
-    app.appendChild(htmlCanvas);
+    // const app = document.querySelector<HTMLElement>("#app")!;
+    // app.appendChild(htmlCanvas);
 
     this.ctx = htmlCanvas.getContext("2d")!;
 
@@ -104,9 +104,6 @@ export default class Canvas {
             inY = inImg.y + inM[1][n],
             outX = outImg.x + Math.round(outM[0][n]),
             outY = outImg.y + Math.round(outM[1][n]);
-
-      if(n === 0)
-        console.log(inX, inY);
 
       if(outX >= outImg.width || outY >= outImg.height)
         continue;
@@ -273,9 +270,9 @@ export default class Canvas {
     this.draw(pixelData, drawImg);
   }
 
-  public async mirrorImage(mirror: Mirror): Promise<void> {
-    const xM = mirror === Mirror.Horizontal ? -1 : 1,
-          yM = mirror === Mirror.Vertical ? -1 : 1;
+  public async mirrorImage(direction: Mirror): Promise<void> {
+    const xM = direction === Mirror.Horizontal ? -1 : 1,
+          yM = direction === Mirror.Vertical ? -1 : 1;
     
     const mM: MirrorMatrix = [
       [ xM,  0,  0 ],
@@ -294,8 +291,8 @@ export default class Canvas {
     };
     const outImg: CanvasImage = {
       ...this.img,
-      x: mirror === Mirror.Horizontal ? this.img.width - 1 : 0,
-      y: mirror === Mirror.Vertical ? this.img.height - 1 : 0
+      x: direction === Mirror.Horizontal ? this.img.width - 1 : 0,
+      y: direction === Mirror.Vertical ? this.img.height - 1 : 0
     };
 
     const pixelData = this.getOutputPixelData(inM, outM, inImg, outImg);
