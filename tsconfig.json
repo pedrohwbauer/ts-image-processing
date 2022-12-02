@@ -14,7 +14,31 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@custom-types/*": [
+        "./types/*"
+      ],
+      "@custom-types": [
+        "./types/index"
+      ],
+      "@canvas/*": [
+        "./canvas/*"
+      ],
+      "@canvas": [
+        "./canvas/index"
+      ],
+      "@factory/*": [
+        "./factory/*"
+      ],
+      "@transform/*": [
+        "./transform/*"
+      ],
+      "@transform": [
+        "./transform/index"
+      ]
+    }
   },
   "include": ["src"]
 }

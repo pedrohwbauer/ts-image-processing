@@ -1,38 +1,44 @@
-import Canvas from "./Canvas";
+import type { Transforms, Canvas } from "@custom-types";
+import { Mirror } from "@transform/enums";
 
-export default function declareCanvasControls(canvas: Canvas) {
-  
-  document.querySelector<HTMLInputElement>("#open-image")!
+export default function declareCanvasControls(
+  canvas: Canvas,
+  transforms: Transforms
+) {
+  document
+    .querySelector<HTMLInputElement>("#open-image")!
     .addEventListener("change", async function () {
-      const file = this.files![0]
-      
+      const file = this.files![0];
+
       const imgSrc = URL.createObjectURL(file);
 
       await canvas.loadImage(imgSrc);
-      
+
       URL.revokeObjectURL(imgSrc);
-      
     });
-  
-  document.querySelector<HTMLButtonElement>("#download")!
+
+  document
+    .querySelector<HTMLButtonElement>("#download")!
     .addEventListener("click", async function () {
       const htmlCanvas = document.querySelector<HTMLCanvasElement>("#canvas")!;
 
-      const link = document.createElement('a') as HTMLAnchorElement;
-      
-      link.download = 'download.png';
+      const link = document.createElement("a") as HTMLAnchorElement;
+
+      link.download = "download.png";
       link.href = htmlCanvas.toDataURL();
       link.click();
       link.remove();
     });
 
-  document.querySelector<HTMLFormElement>("#to-gray-scale")!
+  document
+    .querySelector<HTMLFormElement>("#to-gray-scale")!
     .addEventListener("submit", async function (e: Event) {
       e.preventDefault();
-      await canvas.toGrayScale();
+      await transforms["to-gray-scale"].execute();
     });
 
-  document.querySelector<HTMLFormElement>("#contrast")!
+  document
+    .querySelector<HTMLFormElement>("#contrast")!
     .addEventListener("submit", async function (e: Event) {
       e.preventDefault();
 
@@ -42,10 +48,11 @@ export default function declareCanvasControls(canvas: Canvas) {
 
       if (isNaN(contrast)) throw new Error("Value is not a number!");
 
-      await canvas.applyContrast(contrast);
+      await transforms["apply-contrast"].execute(contrast);
     });
 
-  document.querySelector<HTMLFormElement>("#brightness")!
+  document
+    .querySelector<HTMLFormElement>("#brightness")!
     .addEventListener("submit", async function (e: Event) {
       e.preventDefault();
 
@@ -55,10 +62,11 @@ export default function declareCanvasControls(canvas: Canvas) {
 
       if (isNaN(brightness)) throw new Error("Value is not a number!");
 
-      await canvas.applyBrightness(brightness);
+      await transforms["apply-brightness"].execute(brightness);
     });
 
-  document.querySelector<HTMLFormElement>("#translate")!
+  document
+    .querySelector<HTMLFormElement>("#translate")!
     .addEventListener("submit", async function (e: Event) {
       e.preventDefault();
 
@@ -71,10 +79,11 @@ export default function declareCanvasControls(canvas: Canvas) {
 
       if (isNaN(tx) || isNaN(ty)) throw new Error("Value is not a number!");
 
-      await canvas.translateImage(tx, ty);
+      await transforms["translate-image"].execute(tx, ty);
     });
 
-  document.querySelector<HTMLFormElement>("#resize")!
+  document
+    .querySelector<HTMLFormElement>("#resize")!
     .addEventListener("submit", async function (e: Event) {
       e.preventDefault();
 
@@ -87,10 +96,11 @@ export default function declareCanvasControls(canvas: Canvas) {
 
       if (isNaN(sx) || isNaN(sy)) throw new Error("Value is not a number!");
 
-      await canvas.resizeImage(sx, sy);
+      await transforms["resize-image"].execute(sx, sy);
     });
 
-  document.querySelector<HTMLFormElement>("#rotate")!
+  document
+    .querySelector<HTMLFormElement>("#rotate")!
     .addEventListener("submit", async function (e: Event) {
       e.preventDefault();
 
@@ -100,22 +110,21 @@ export default function declareCanvasControls(canvas: Canvas) {
 
       if (isNaN(angle)) throw new Error("Value is not a number!");
 
-      await canvas.rotateImage(angle);
+      await transforms["rotate-image"].execute(angle);
     });
 
-  document.querySelector<HTMLFormElement>("#mirror")!
+  document
+    .querySelector<HTMLFormElement>("#mirror")!
     .addEventListener("submit", async function (e: Event) {
       e.preventDefault();
 
-      const direction = this.querySelector<HTMLSelectElement>(
+      const directionString = this.querySelector<HTMLSelectElement>(
         '[name="direction"]'
       )!.value as string;
 
-      const mirror =
-        direction === "horizontal"
-          ? Canvas.Mirror.Horizontal
-          : Canvas.Mirror.Vertical;
+      const direction =
+        directionString === "horizontal" ? Mirror.Horizontal : Mirror.Vertical;
 
-      await canvas.mirrorImage(mirror);
+      await transforms["mirror-image"].execute(direction);
     });
 }
