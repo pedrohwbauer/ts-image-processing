@@ -1,8 +1,8 @@
-import type { Transforms, Canvas } from "@custom-types";
+import type { Transforms, CanvasController } from "@custom-types";
 import { Mirror } from "@transform/enums";
 
-export default function declareCanvasControls(
-  canvas: Canvas,
+export function declareButtonActions(
+  canvasCtrl: CanvasController,
   transforms: Transforms
 ) {
   document
@@ -12,7 +12,7 @@ export default function declareCanvasControls(
 
       const imgSrc = URL.createObjectURL(file);
 
-      await canvas.loadImage(imgSrc);
+      await canvasCtrl.loadImage(imgSrc);
 
       URL.revokeObjectURL(imgSrc);
     });

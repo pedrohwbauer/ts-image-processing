@@ -4,8 +4,8 @@ import path from 'path'
 export default defineConfig({
   resolve: {
     alias: {
-      '@canvas': path.resolve(__dirname, './src/canvas'),
-      '@factory': path.resolve(__dirname, './src/factory'),
+      '@controllers': path.resolve(__dirname, './src/controllers'),
+      '@factories': path.resolve(__dirname, './src/factories'),
       '@transform': path.resolve(__dirname, './src/transform'),
     },
   },

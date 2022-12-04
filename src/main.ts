@@ -1,10 +1,10 @@
-import Canvas from '@canvas'
-import { createTransforms } from '@factory/transforms-factory';
-import declareCanvasControls from './canvasControls'
+import { CanvasController } from '@controllers/canvas-controller'
+import { createTransforms } from '@factories/transforms-factory';
+import { declareButtonActions } from './buttonActions'
 
-const canvas = new Canvas(600,600);
-const transforms = createTransforms(canvas);
+const canvasCtrl = new CanvasController(document.querySelector<HTMLCanvasElement>("#canvas")!);
+const transforms = createTransforms(canvasCtrl);
 
 document.addEventListener("DOMContentLoaded", function() {
-  declareCanvasControls(canvas, transforms);
+  declareButtonActions(canvasCtrl, transforms);
 });

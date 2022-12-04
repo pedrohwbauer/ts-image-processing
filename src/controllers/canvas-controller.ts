@@ -2,27 +2,22 @@ import type { PixelPositionMatrix } from "@custom-types";
 
 import { Pivot } from "@transform/enums";
 
-export type CanvasImage = {
+type ImagePositionData = {
   x: number;
   y: number;
   width: number;
   height: number;
 };
 
-export default class Canvas {
+export class CanvasController {
   public width: number;
   public height: number;
   public ctx: CanvasRenderingContext2D;
-  public img: CanvasImage;
+  public img: ImagePositionData;
 
-  constructor(width: number, height: number) {
-    const htmlCanvas = document.querySelector<HTMLCanvasElement>("#canvas")!;
-
-    this.width = htmlCanvas.width = width;
-    this.height = htmlCanvas.height = height;
-
-    // const app = document.querySelector<HTMLElement>("#app")!;
-    // app.appendChild(htmlCanvas);
+  constructor(htmlCanvas: HTMLCanvasElement) {
+    this.width = htmlCanvas.width;
+    this.height = htmlCanvas.height;
 
     this.ctx = htmlCanvas.getContext("2d")!;
 
@@ -57,11 +52,11 @@ export default class Canvas {
   public getPixelPositionMatrix(
     pivot: Pivot = Pivot.TopLeft
   ): PixelPositionMatrix {
-    const pixelPositionMatrix: PixelPositionMatrix = [
+    const pixelPositionMatrix = [
       [], // X
       [], // Y
       [], // 1
-    ];
+    ] as PixelPositionMatrix;
 
     const yInit = pivot === Pivot.Center ? -Math.floor(this.img.height / 2) : 0;
     const xInit = pivot === Pivot.Center ? -Math.floor(this.img.width / 2) : 0;
@@ -84,8 +79,8 @@ export default class Canvas {
   public getOutputPixelData(
     inM: PixelPositionMatrix,
     outM: PixelPositionMatrix,
-    inImg: CanvasImage,
-    outImg: CanvasImage
+    inImg: ImagePositionData,
+    outImg: ImagePositionData
   ): Uint8ClampedArray {
     const inPixelData = this.ctx.getImageData(
         this.img.x,
@@ -116,7 +111,7 @@ export default class Canvas {
     return outPixelData;
   }
 
-  public draw(pixelData: Uint8ClampedArray, drawImg?: CanvasImage): void {
+  public draw(pixelData: Uint8ClampedArray, drawImg?: ImagePositionData): void {
     if (!drawImg)
       drawImg = {
         x: 0,

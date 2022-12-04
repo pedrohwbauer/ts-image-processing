@@ -17,20 +17,14 @@
     "skipLibCheck": true,
     "baseUrl": "./src",
     "paths": {
-      "@custom-types/*": [
-        "./types/*"
-      ],
       "@custom-types": [
         "./types/index"
       ],
-      "@canvas/*": [
-        "./canvas/*"
+      "@controllers/*": [
+        "./controllers/*"
       ],
-      "@canvas": [
-        "./canvas/index"
-      ],
-      "@factory/*": [
-        "./factory/*"
+      "@factories/*": [
+        "./factories/*"
       ],
       "@transform/*": [
         "./transform/*"
