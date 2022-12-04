@@ -23,8 +23,8 @@ export default class resizeImage extends Transform {
 
     const outImg = {
       ...inImg,
-      width: Math.round(sx! * canvasCtrl.img.width),
-      height: Math.round(sy! * canvasCtrl.img.height),
+      width: Math.round(sx * canvasCtrl.img.width),
+      height: Math.round(sy * canvasCtrl.img.height),
     } as typeof canvasCtrl.img;
 
     const pixelData = canvasCtrl.getOutputPixelData(inM, outM, inImg, outImg);

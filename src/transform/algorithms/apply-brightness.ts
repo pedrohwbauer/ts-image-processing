@@ -10,9 +10,9 @@ export default class ApplyBrightness extends Transform {
     ).data;
 
     for (let i = 0; i < pixelData.length; i += 4) {
-      pixelData[i + 0] += brightness!; // R
-      pixelData[i + 1] += brightness!; // G
-      pixelData[i + 2] += brightness!; // B
+      pixelData[i + 0] += brightness; // R
+      pixelData[i + 1] += brightness; // G
+      pixelData[i + 2] += brightness; // B
     }
 
     canvasCtrl.draw(pixelData);

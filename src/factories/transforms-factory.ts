@@ -1,4 +1,4 @@
-import { CanvasController } from "@controllers/canvas-controller";
+import { CanvasController } from "@custom-types";
 
 import ApplyBrightness from "@transform/algorithms/apply-brightness";
 import ApplyContrast from "@transform/algorithms/apply-contrast";
