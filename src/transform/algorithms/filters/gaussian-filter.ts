@@ -23,7 +23,7 @@ export default class GaussianFilter extends Filter {
       [1, 2, 1],
     ];
 
-    const outRgbaM = this.filterRGBAMatrix(
+    const outRgbaM = await this.filterRGBAMatrix(
       inRgbaM,
       mask,
       (productM) => this.sumMatrix(productM) / 16

@@ -45,7 +45,7 @@ export default class ModeFilter extends Filter {
       [1, 1, 1],
     ];
 
-    const outRgbaM = this.filterRGBAMatrix(inRgbaM, mask, (productM) =>
+    const outRgbaM = await this.filterRGBAMatrix(inRgbaM, mask, (productM) =>
       getMatrixMode(productM)
     );
 

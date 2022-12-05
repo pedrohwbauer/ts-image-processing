@@ -67,7 +67,7 @@ export abstract class Filter extends Transform {
     };
 
     const mWidth = inRgbaM[0][0].length,
-    mHeight = inRgbaM[0].length;
+      mHeight = inRgbaM[0].length;
 
     const outRgbaM = this.getEmptyRGBAMatrix(mWidth, mHeight);
 
@@ -96,7 +96,7 @@ export abstract class Filter extends Transform {
   protected matrixToArray(mtx: Uint8ClampedArray[]): number[] {
     const arr = [] as number[];
 
-    mtx.forEach((row) => arr.push(...row))
+    mtx.forEach((row) => arr.push(...row));
 
     return arr;
   }
@@ -115,6 +115,52 @@ export abstract class Filter extends Transform {
         pixelData[idx + 1] = rgbaM[1][y][x]; // G
         pixelData[idx + 2] = rgbaM[2][y][x]; // B
         pixelData[idx + 3] = rgbaM[3][y][x]; // A
+      }
+    }
+
+    return pixelData;
+  }
+
+  protected getRGBAGradientsFromRGBAMatrix(
+    rgbaM: RGBAMatrix,
+    masks: number[][][]
+  ): RGBAMatrix[] {
+    return masks.map((mask) =>
+      this.filterRGBAMatrix(rgbaM, mask, (productM) => this.sumMatrix(productM))
+    );
+  }
+
+  protected async getPixelDataFromRGBAGradients(
+    rgbaGs: RGBAMatrix[],
+    handleGradient: (gs: number[]) => Promise<number>
+  ): Promise<Uint8ClampedArray> {
+    const mWidth = rgbaGs[0][0][0].length,
+      mHeight = rgbaGs[0][0].length;
+
+    const pixelData = new Uint8ClampedArray(4 * mHeight * mWidth);
+
+    for (let y = 0; y < mHeight; y++) {
+      for (let x = 0; x < mWidth; x++) {
+        const idx = 4 * (y * mHeight + x);
+
+        const g = {
+          r: [] as number[],
+          g: [] as number[],
+          b: [] as number[],
+          a: [] as number[],
+        };
+
+        rgbaGs.forEach((rgbaG) => {
+          g.r.push(rgbaG[0][y][x]); // R
+          g.g.push(rgbaG[1][y][x]); // G
+          g.b.push(rgbaG[2][y][x]); // B
+          g.a.push(rgbaG[3][y][x]); // A
+        });
+
+        pixelData[idx + 0] = await handleGradient(g.r); // R
+        pixelData[idx + 1] = await handleGradient(g.g); // G
+        pixelData[idx + 2] = await handleGradient(g.b); // B
+        pixelData[idx + 3] = await handleGradient(g.a); // A
       }
     }
 

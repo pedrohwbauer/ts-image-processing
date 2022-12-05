@@ -45,6 +45,32 @@ export function declareButtonActions(
     });
 
   document
+    .querySelector<HTMLFormElement>("#border-detection")!
+    .addEventListener("submit", async function (e: Event) {
+      e.preventDefault();
+
+      const threshold = parseFloat(
+        this.querySelector<HTMLInputElement>('[name="threshold"]')!.value
+      );
+
+      if (isNaN(threshold)) throw new Error("Value is not a number!");
+      
+      const method = this.querySelector<HTMLSelectElement>(
+        '[name="detection-method"]'
+      )!.value as string
+
+      switch(method) {
+        case "roberts":
+          await transforms["roberts-border-detection"].execute(threshold);
+        case "kirsch":
+          await transforms["kirsch-border-detection"].execute(threshold);
+        case "robinson":
+          await transforms["robinson-border-detection"].execute(threshold);
+      }
+
+    });
+
+  document
     .querySelector<HTMLFormElement>("#mean-filter")!
     .addEventListener("submit", async function (e: Event) {
       e.preventDefault();

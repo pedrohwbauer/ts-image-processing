@@ -31,7 +31,7 @@ export default class MeanFilter extends Filter {
       [1, 1, 1],
     ];
 
-    const outRgbaM = this.filterRGBAMatrix(
+    const outRgbaM = await this.filterRGBAMatrix(
       inRgbaM,
       mask,
       (productM) => getMatrixMedian(productM)

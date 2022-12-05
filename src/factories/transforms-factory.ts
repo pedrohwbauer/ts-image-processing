@@ -12,6 +12,9 @@ import GaussianFilter from "@transform/algorithms/filters/gaussian-filter";
 import MedianFilter from "@transform/algorithms/filters/median-filter";
 import ModeFilter from "@transform/algorithms/filters/mode-filter";
 import ThresholFilter from "@transform/algorithms/filters/threshold-filter";
+import RobertsBorderDetection from "@transform/algorithms/filters/roberts-border-detection";
+import KirschBorderDetection from "@transform/algorithms/filters/kirsch-border-detection";
+import RobinsonBorderDetection from "@transform/algorithms/filters/robinson-border-detection";
 
 export function createTransforms(canvasCtrl: CanvasController): typeof transforms {
   const transforms = {
@@ -27,6 +30,9 @@ export function createTransforms(canvasCtrl: CanvasController): typeof transform
     "median-filter": new MedianFilter(canvasCtrl),
     "mode-filter": new ModeFilter(canvasCtrl),
     "threshold-filter": new ThresholFilter(canvasCtrl),
+    "roberts-border-detection": new RobertsBorderDetection(canvasCtrl),
+    "kirsch-border-detection": new KirschBorderDetection(canvasCtrl),
+    "robinson-border-detection": new RobinsonBorderDetection(canvasCtrl),
   }
 
   return transforms;

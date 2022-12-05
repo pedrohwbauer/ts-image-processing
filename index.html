@@ -18,6 +18,30 @@
         
         <button id="download">Download</button>
         
+        <form id="to-gray-scale">
+          <div class="submit-btn">
+            <input type="submit" value="To Gray Scale">
+          </div>
+        </form>
+
+        <form id="border-detection">
+          <div class="field">
+            <label for="threshold">Threshold</label>
+            <input type="number" step="any" name="threshold">
+          </div>
+          <div class="field">
+            <label for="detection-method">Method</label>
+            <select name="detection-method">
+              <option value="roberts" selected>Roberts</option>
+              <option value="kirsch">Kirsch</option>
+              <option value="robinson">Robinson</option>
+            </select>
+          </div>
+          <div class="submit-btn">
+            <input type="submit" value="Detect borders">
+          </div>
+        </form>
+
         <form id="thresholding">
           <div class="field">
             <label for="threshold">Thresholding</label>
@@ -47,12 +71,6 @@
         <form id="mode-filter">
           <div class="submit-btn">
             <input type="submit" value="Mode Filter">
-          </div>
-        </form>
-
-        <form id="to-gray-scale">
-          <div class="submit-btn">
-            <input type="submit" value="To Gray Scale">
           </div>
         </form>
 
