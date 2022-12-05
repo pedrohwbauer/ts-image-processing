@@ -1,4 +1,4 @@
-import { CanvasController } from "@custom-types";
+import type { CanvasController } from "@custom-types";
 
 import ApplyBrightness from "@transform/algorithms/apply-brightness";
 import ApplyContrast from "@transform/algorithms/apply-contrast";
@@ -7,6 +7,10 @@ import ResizeImage from "@transform/algorithms/resize-image";
 import RotateImage from "@transform/algorithms/rotate-image";
 import ToGrayScale from "@transform/algorithms/to-gray-scale";
 import TranslateImage from "@transform/algorithms/translate-image";
+import MeanFilter from "@transform/algorithms/filters/mean-filter";
+import GaussianFilter from "@transform/algorithms/filters/gaussian-filter";
+import MedianFilter from "@transform/algorithms/filters/median-filter";
+import ModeFilter from "@transform/algorithms/filters/mode-filter";
 
 export function createTransforms(canvasCtrl: CanvasController): typeof transforms {
   const transforms = {
@@ -17,6 +21,10 @@ export function createTransforms(canvasCtrl: CanvasController): typeof transform
     "rotate-image": new RotateImage(canvasCtrl),
     "to-gray-scale": new ToGrayScale(canvasCtrl),
     "translate-image": new TranslateImage(canvasCtrl),
+    "mean-filter": new MeanFilter(canvasCtrl),
+    "gaussian-filter": new GaussianFilter(canvasCtrl),
+    "median-filter": new MedianFilter(canvasCtrl),
+    "mode-filter": new ModeFilter(canvasCtrl),
   }
 
   return transforms;

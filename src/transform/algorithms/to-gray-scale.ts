@@ -1,7 +1,9 @@
 import { Transform } from "@transform";
 
 export default class ToGrayScale extends Transform {
-  async execute(canvasCtrl = this.canvasCtrl) {
+  async execute() {
+    const canvasCtrl = this.getSelfCanvasController()!;
+
     const pixelData = canvasCtrl.ctx.getImageData(
       0,
       0,

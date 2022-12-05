@@ -1,7 +1,9 @@
 import { Transform } from "@transform";
 
 export default class ApplyBrightness extends Transform {
-  async execute(brightness: number, canvasCtrl = this.canvasCtrl) {
+  async execute(brightness: number) {
+    const canvasCtrl = this.getSelfCanvasController()!;
+    
     const pixelData = canvasCtrl.ctx.getImageData(
       0,
       0,

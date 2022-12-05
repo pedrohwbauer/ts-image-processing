@@ -2,32 +2,34 @@ import { multiply } from "mathjs";
 
 import { Transform } from "@transform";
 
-import {  PixelPositionMatrix } from "@custom-types";
+import { PixelPositionMatrix, ImagePositionData } from "@custom-types";
 
 export default class resizeImage extends Transform {
-  public async execute(sx: number, sy: number, canvasCtrl = this.canvasCtrl) {
+  public async execute(sx: number, sy: number) {
+    const canvasCtrl = this.getSelfCanvasController()!;
+
     const scaleMatrix = [
       [sx, 0, 0],
       [0, sy, 0],
       [0, 0, 1],
     ];
 
-    const inM = canvasCtrl.getPixelPositionMatrix(),
+    const inM = this.getPixelPositionMatrix(),
       outM = multiply(scaleMatrix, inM) as unknown as PixelPositionMatrix;
 
     const inImg = {
       ...canvasCtrl.img,
       x: 0,
       y: 0,
-    } as typeof canvasCtrl.img;
+    } as ImagePositionData;
 
     const outImg = {
       ...inImg,
       width: Math.round(sx * canvasCtrl.img.width),
       height: Math.round(sy * canvasCtrl.img.height),
-    } as typeof canvasCtrl.img;
+    } as ImagePositionData;
 
-    const pixelData = canvasCtrl.getOutputPixelData(inM, outM, inImg, outImg);
+    const pixelData = this.getOutputPixelDataFromPixelPosition(inM, outM, inImg, outImg);
 
     canvasCtrl.img.width = outImg.width;
     canvasCtrl.img.height = outImg.height;

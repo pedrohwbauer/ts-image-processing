@@ -1,7 +1,9 @@
 import { Transform } from "@transform";
 
 export default class ApplyContrast extends Transform {
-  async execute(contrast: number, canvasCtrl = this.canvasCtrl) {
+  async execute(contrast: number) {
+    const canvasCtrl = this.getSelfCanvasController()!;
+
     const pixelData = canvasCtrl.ctx.getImageData(
       0,
       0,

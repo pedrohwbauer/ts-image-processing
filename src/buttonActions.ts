@@ -31,6 +31,34 @@ export function declareButtonActions(
     });
 
   document
+    .querySelector<HTMLFormElement>("#mean-filter")!
+    .addEventListener("submit", async function (e: Event) {
+      e.preventDefault();
+      await transforms["mean-filter"].execute();
+    });
+  
+  document
+    .querySelector<HTMLFormElement>("#gaussian-filter")!
+    .addEventListener("submit", async function (e: Event) {
+      e.preventDefault();
+      await transforms["gaussian-filter"].execute();
+    });
+
+  document
+    .querySelector<HTMLFormElement>("#median-filter")!
+    .addEventListener("submit", async function (e: Event) {
+      e.preventDefault();
+      await transforms["median-filter"].execute();
+    });
+  
+  document
+    .querySelector<HTMLFormElement>("#mode-filter")!
+    .addEventListener("submit", async function (e: Event) {
+      e.preventDefault();
+      await transforms["mode-filter"].execute();
+    });
+
+  document
     .querySelector<HTMLFormElement>("#to-gray-scale")!
     .addEventListener("submit", async function (e: Event) {
       e.preventDefault();
