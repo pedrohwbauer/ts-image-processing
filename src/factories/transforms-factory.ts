@@ -11,6 +11,7 @@ import MeanFilter from "@transform/algorithms/filters/mean-filter";
 import GaussianFilter from "@transform/algorithms/filters/gaussian-filter";
 import MedianFilter from "@transform/algorithms/filters/median-filter";
 import ModeFilter from "@transform/algorithms/filters/mode-filter";
+import ThresholFilter from "@transform/algorithms/filters/threshold-filter";
 
 export function createTransforms(canvasCtrl: CanvasController): typeof transforms {
   const transforms = {
@@ -25,6 +26,7 @@ export function createTransforms(canvasCtrl: CanvasController): typeof transform
     "gaussian-filter": new GaussianFilter(canvasCtrl),
     "median-filter": new MedianFilter(canvasCtrl),
     "mode-filter": new ModeFilter(canvasCtrl),
+    "threshold-filter": new ThresholFilter(canvasCtrl),
   }
 
   return transforms;

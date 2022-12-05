@@ -31,12 +31,26 @@ export function declareButtonActions(
     });
 
   document
+    .querySelector<HTMLFormElement>("#thresholding")!
+    .addEventListener("submit", async function (e: Event) {
+      e.preventDefault();
+
+      const threshold = parseFloat(
+        this.querySelector<HTMLInputElement>('[name="threshold"]')!.value
+      );
+
+      if (isNaN(threshold)) throw new Error("Value is not a number!");
+
+      await transforms["threshold-filter"].execute(threshold);
+    });
+
+  document
     .querySelector<HTMLFormElement>("#mean-filter")!
     .addEventListener("submit", async function (e: Event) {
       e.preventDefault();
       await transforms["mean-filter"].execute();
     });
-  
+
   document
     .querySelector<HTMLFormElement>("#gaussian-filter")!
     .addEventListener("submit", async function (e: Event) {
@@ -50,7 +64,7 @@ export function declareButtonActions(
       e.preventDefault();
       await transforms["median-filter"].execute();
     });
-  
+
   document
     .querySelector<HTMLFormElement>("#mode-filter")!
     .addEventListener("submit", async function (e: Event) {
