@@ -15,6 +15,10 @@ import ThresholFilter from "@transform/algorithms/filters/threshold-filter";
 import RobertsBorderDetection from "@transform/algorithms/filters/roberts-border-detection";
 import KirschBorderDetection from "@transform/algorithms/filters/kirsch-border-detection";
 import RobinsonBorderDetection from "@transform/algorithms/filters/robinson-border-detection";
+import Dilation from "@transform/algorithms/morphologies/dilation";
+import Erosion from "@transform/algorithms/morphologies/erosion";
+import Opening from "@transform/algorithms/morphologies/opening";
+import Closing from "@transform/algorithms/morphologies/closing";
 
 export function createTransforms(canvasCtrl: CanvasController): typeof transforms {
   const transforms = {
@@ -33,6 +37,10 @@ export function createTransforms(canvasCtrl: CanvasController): typeof transform
     "roberts-border-detection": new RobertsBorderDetection(canvasCtrl),
     "kirsch-border-detection": new KirschBorderDetection(canvasCtrl),
     "robinson-border-detection": new RobinsonBorderDetection(canvasCtrl),
+    "dilation": new Dilation(canvasCtrl),
+    "erosion": new Erosion(canvasCtrl),
+    "opening": new Opening(canvasCtrl),
+    "closing": new Closing(canvasCtrl),
   }
 
   return transforms;

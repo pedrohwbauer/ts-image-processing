@@ -24,6 +24,25 @@
           </div>
         </form>
 
+        <form id="morphology">
+          <div class="field">
+            <label for="intensity">Morphology intensity</label>
+            <input type="number" step="any" name="intensity">
+          </div>
+          <div class="field">
+            <label for="morphology-type">Type</label>
+            <select name="morphology-type">
+              <option value="dilation" selected>Dilation</option>
+              <option value="erosion">Erosion</option>
+              <option value="opening">Opening</option>
+              <option value="closing">Closing</option>
+            </select>
+          </div>
+          <div class="submit-btn">
+            <input type="submit" value="Apply">
+          </div>
+        </form>
+        
         <form id="border-detection">
           <div class="field">
             <label for="threshold">Threshold</label>

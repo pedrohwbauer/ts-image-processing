@@ -45,6 +45,38 @@ export function declareButtonActions(
     });
 
   document
+    .querySelector<HTMLFormElement>("#morphology")!
+    .addEventListener("submit", async function (e: Event) {
+      e.preventDefault();
+
+      const intensity = parseFloat(
+        this.querySelector<HTMLInputElement>('[name="intensity"]')!.value
+      );
+
+      if (isNaN(intensity)) throw new Error("Value is not a number!");
+      
+      const type = this.querySelector<HTMLSelectElement>(
+        '[name="morphology-type"]'
+      )!.value as string
+
+      switch(type) {
+        case "dilation":
+          await transforms["dilation"].execute(intensity);
+          break;
+        case "erosion":
+          await transforms["erosion"].execute(intensity);
+          break;
+        case "opening":
+          await transforms["opening"].execute(intensity);
+          break;
+        case "closing":
+          await transforms["closing"].execute(intensity);
+          break;
+      }
+
+    });
+
+  document
     .querySelector<HTMLFormElement>("#border-detection")!
     .addEventListener("submit", async function (e: Event) {
       e.preventDefault();
